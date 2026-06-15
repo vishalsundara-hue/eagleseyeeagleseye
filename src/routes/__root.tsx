@@ -79,10 +79,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "EaglesEye AI · Hospital Attention & Response Intelligence" },
       { name: "description", content: "AI-powered triage and response intelligence for hospital teams." },
-      { property: "og:title", content: "EaglesEye AI" },
-      { property: "og:description", content: "Who needs attention next? AI triage for healthcare teams." },
+      { property: "og:title", content: "EaglesEye AI · Hospital Attention & Response Intelligence" },
+      { property: "og:description", content: "AI-powered triage and response intelligence for hospital teams." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "EaglesEye AI · Hospital Attention & Response Intelligence" },
+      { name: "twitter:description", content: "AI-powered triage and response intelligence for hospital teams." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4e0739fc-29ad-4c1d-9cf3-129f0fb026f2/id-preview-51fe7994--821de564-f6a8-4a80-a7e7-fca729da8b85.lovable.app-1781509853484.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4e0739fc-29ad-4c1d-9cf3-129f0fb026f2/id-preview-51fe7994--821de564-f6a8-4a80-a7e7-fca729da8b85.lovable.app-1781509853484.png" },
     ],
     links: [
       {
