@@ -3,6 +3,35 @@ import { generatePatients, type Patient, type Status } from "./mockData";
 
 type Listener = () => void;
 
+export interface Nurse {
+  name: string;
+  phone: string; // E.164 without +
+  ward: string;
+  available: boolean;
+}
+
+export interface AlertLog {
+  id: string;
+  patientId: string;
+  patientName: string;
+  nurse: Nurse;
+  risk: number;
+  message: string;
+  ts: number;
+  delivered: boolean;
+}
+
+export const NURSES: Nurse[] = [
+  { name: "Rupa",       phone: "918248832986", ward: "ICU-A",      available: true },
+  { name: "N. Patel",   phone: "919000000002", ward: "ICU-B",      available: true },
+  { name: "S. Khan",    phone: "919000000003", ward: "CCU",        available: true },
+  { name: "R. Mehta",   phone: "919000000004", ward: "Cardiac",    available: true },
+  { name: "A. Singh",   phone: "919000000005", ward: "Pulmonary",  available: true },
+  { name: "L. Davis",   phone: "919000000006", ward: "General-1",  available: true },
+  { name: "M. Brown",   phone: "919000000007", ward: "General-2",  available: true },
+  { name: "K. Iyer",    phone: "919000000008", ward: "Pediatrics", available: true },
+];
+
 function statusFromRisk(r: number): Status {
   if (r >= 80) return "Critical";
   if (r >= 60) return "High Risk";
@@ -23,9 +52,29 @@ function genReasons(p: Patient): string[] {
   return r;
 }
 
+function buildWhatsAppMessage(p: Patient, nurse: Nurse): string {
+  return [
+    `🚨 EaglesEye AI · ${p.status.toUpperCase()} ALERT`,
+    ``,
+    `Patient: ${p.name} (${p.id})`,
+    `Ward: ${p.ward} · Room ${p.room}`,
+    `Risk Score: ${p.riskScore}%`,
+    ``,
+    `Vitals:`,
+    `• SpO₂: ${p.spo2}%`,
+    `• HR: ${p.heartRate} bpm`,
+    `• BP: ${p.bpSys}/${p.bpDia} mmHg`,
+    `• Temp: ${p.temperature.toFixed(1)}°C`,
+    ``,
+    `Action: Please respond immediately. You have been auto-assigned by EaglesEye AI.`,
+    `— Nurse ${nurse.name}`,
+  ].join("\n");
+}
+
 class Store {
   patients: Patient[] = generatePatients();
-  totalNurses = 24;
+  totalNurses = NURSES.length;
+  alerts: AlertLog[] = [];
   private listeners = new Set<Listener>();
 
   subscribe = (l: Listener) => {
@@ -35,8 +84,38 @@ class Store {
   private emit() { this.listeners.forEach(l => l()); }
 
   getSnapshot = () => this.patients;
+  getAlertsSnapshot = () => this.alerts;
+  subscribeAlerts = (l: Listener) => {
+    this.listeners.add(l);
+    return () => this.listeners.delete(l);
+  };
+
+  private pickNurse(ward: string): Nurse | null {
+    const assigned = new Set(this.patients.map(p => p.assignedNurse).filter(Boolean));
+    const free = NURSES.filter(n => !assigned.has(n.name));
+    if (free.length === 0) return null;
+    const wardMatch = free.find(n => n.ward === ward);
+    return wardMatch ?? free[0];
+  }
+
+  private dispatchAlert(p: Patient, nurse: Nurse) {
+    const msg = buildWhatsAppMessage(p, nurse);
+    const log: AlertLog = {
+      id: `A${Date.now()}${Math.floor(Math.random() * 1000)}`,
+      patientId: p.id,
+      patientName: p.name,
+      nurse,
+      risk: p.riskScore,
+      message: msg,
+      ts: Date.now(),
+      delivered: true,
+    };
+    this.alerts = [log, ...this.alerts].slice(0, 50);
+  }
 
   tick() {
+    const autoAssignments: { patient: Patient; nurse: Nurse }[] = [];
+
     this.patients = this.patients.map(p => {
       const driftSpo2 = (Math.random() - 0.5) * 2;
       const driftHr = (Math.random() - 0.5) * 6;
@@ -48,7 +127,6 @@ class Store {
       const bpSys = Math.round(Math.max(75, Math.min(180, p.bpSys + driftBp)));
       const temperature = Number(Math.max(35, Math.min(40.5, p.temperature + driftTemp)).toFixed(1));
 
-      // Risk model (explainable, simple)
       let risk = 10;
       if (spo2 < 92) risk += (92 - spo2) * 8;
       else if (spo2 < 95) risk += (95 - spo2) * 4;
@@ -56,7 +134,6 @@ class Store {
       if (heartRate < 55) risk += (55 - heartRate) * 2;
       if (bpSys < 95) risk += (95 - bpSys) * 1.8;
       if (temperature > 38.5) risk += (temperature - 38.5) * 12;
-      // Nurse assignment reduces risk
       if (p.assignedNurse) risk -= 8;
       risk = Math.round(Math.max(5, Math.min(99, risk * 0.55 + p.riskScore * 0.45)));
 
@@ -77,17 +154,38 @@ class Store {
       }));
       return updated;
     });
+
+    // Auto-assign nurses to any high-risk / critical patient without one
+    this.patients = this.patients.map(p => {
+      if (!p.assignedNurse && p.riskScore >= 60) {
+        const nurse = this.pickNurse(p.ward);
+        if (nurse) {
+          autoAssignments.push({ patient: p, nurse });
+          return { ...p, assignedNurse: nurse.name };
+        }
+      }
+      return p;
+    });
+
+    autoAssignments.forEach(({ patient, nurse }) => this.dispatchAlert(patient, nurse));
+
     this.patients.sort((a, b) => b.riskScore - a.riskScore);
     this.emit();
   }
 
   assignNurse(id: string) {
+    let assignedNurse: Nurse | null = null;
     this.patients = this.patients.map(p => {
       if (p.id !== id) return p;
+      const nurse = p.assignedNurse
+        ? NURSES.find(n => n.name === p.assignedNurse) ?? this.pickNurse(p.ward)
+        : this.pickNurse(p.ward);
+      if (!nurse) return p;
+      assignedNurse = nurse;
       const newRisk = Math.max(15, p.riskScore - 25);
       const updated: Patient = {
         ...p,
-        assignedNurse: p.assignedNurse ?? ["N. Patel","S. Khan","R. Mehta","A. Singh","L. Davis"][Math.floor(Math.random()*5)],
+        assignedNurse: nurse.name,
         riskScore: newRisk,
         status: statusFromRisk(newRisk),
         alert: false,
@@ -101,6 +199,10 @@ class Store {
       }));
       return updated;
     });
+    if (assignedNurse) {
+      const p = this.patients.find(x => x.id === id);
+      if (p) this.dispatchAlert(p, assignedNurse);
+    }
     this.patients.sort((a, b) => b.riskScore - a.riskScore);
     this.emit();
   }
@@ -109,8 +211,11 @@ class Store {
 export const store = new Store();
 
 export function usePatients() {
-  // SSR-safe: return the same snapshot on the server
   return useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
+}
+
+export function useAlerts() {
+  return useSyncExternalStore(store.subscribeAlerts, store.getAlertsSnapshot, store.getAlertsSnapshot);
 }
 
 export function useRealtime(intervalMs = 3500) {
@@ -118,4 +223,8 @@ export function useRealtime(intervalMs = 3500) {
     const id = setInterval(() => store.tick(), intervalMs);
     return () => clearInterval(id);
   }, [intervalMs]);
+}
+
+export function whatsappLink(phone: string, message: string) {
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
