@@ -2,6 +2,8 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Activity, LayoutDashboard, Radar, BarChart3, Stethoscope } from "lucide-react";
 import { type ReactNode } from "react";
 import { useRealtime, usePatients } from "@/lib/store";
+import { AlertsPanel } from "./AlertsPanel";
+
 
 const nav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -80,6 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full glass">
               <span className="live-dot" /> <span className="text-emerald-300">LIVE</span>
             </span>
+            <AlertsPanel />
             <span className="hidden sm:inline text-slate-400">St. Aurora General Hospital</span>
           </div>
         </header>
