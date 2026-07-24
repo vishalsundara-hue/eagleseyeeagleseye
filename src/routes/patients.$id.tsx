@@ -1,10 +1,16 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Activity, Droplet, Thermometer, Wind, Sparkles, UserPlus, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Activity, Droplet, Thermometer, Wind, Sparkles, UserPlus, AlertTriangle, Siren, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { RiskRing } from "@/components/RiskRing";
-import { usePatients, store } from "@/lib/store";
+import { usePatients, store, NURSES } from "@/lib/store";
 import { STATUS_COLORS } from "@/lib/mockData";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, AreaChart, Area } from "recharts";
+
+const CRITICAL_WEBHOOK_URL = "https://vishalvishal.app.n8n.cloud/webhook/critical-alert";
+const CHARGE_NURSE_PHONE = "919000000099";
+const DOCTOR_PHONE = "919000000100";
 
 export const Route = createFileRoute("/patients/$id")({
   head: () => ({ meta: [{ title: "Patient · EaglesEye AI" }] }),
