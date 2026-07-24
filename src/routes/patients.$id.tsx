@@ -55,21 +55,24 @@ function PatientDetails() {
       doctor: DOCTOR_PHONE,
     };
     setSending(true);
+    console.log("Sending webhook...", body);
     try {
-      const res = await fetch(CRITICAL_WEBHOOK_URL, {
+      const response = await fetch(CRITICAL_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      console.log("Webhook success", response);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       toast.success("Emergency alert sent successfully.");
-    } catch (err) {
-      console.error("Critical alert failed", err);
+    } catch (error) {
+      console.error("Webhook failed", error);
       toast.error("Failed to send emergency alert.");
     } finally {
       setSending(false);
     }
   }
+
 
 
   if (!p) {
@@ -107,7 +110,8 @@ function PatientDetails() {
           </div>
           <div className="shrink-0 flex flex-col sm:flex-row gap-2">
             <button
-              onClick={sendCriticalAlert}
+              type="button"
+              onClick={() => { void sendCriticalAlert(); }}
               disabled={sending}
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-500 text-white font-semibold text-sm hover:shadow-lg hover:shadow-rose-500/40 transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
