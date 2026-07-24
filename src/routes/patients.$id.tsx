@@ -55,21 +55,24 @@ function PatientDetails() {
       doctor: DOCTOR_PHONE,
     };
     setSending(true);
+    console.log("Sending webhook...", body);
     try {
-      const res = await fetch(CRITICAL_WEBHOOK_URL, {
+      const response = await fetch(CRITICAL_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      console.log("Webhook success", response);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       toast.success("Emergency alert sent successfully.");
-    } catch (err) {
-      console.error("Critical alert failed", err);
+    } catch (error) {
+      console.error("Webhook failed", error);
       toast.error("Failed to send emergency alert.");
     } finally {
       setSending(false);
     }
   }
+
 
 
   if (!p) {
