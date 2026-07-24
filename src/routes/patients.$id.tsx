@@ -44,15 +44,25 @@ function PatientDetails() {
     const backup = NURSES.find(n => n.ward === p.ward && n.name !== assigned?.name)
       ?? NURSES.find(n => n.name !== assigned?.name);
     const body = {
-      patient: p.name,
-      bed: `${p.ward} · Room ${p.room}`,
-      condition: p.diagnosis,
+      patient_name: p.name,
+      assigned_nurse: {
+        name: assigned?.name ?? NURSES[0].name,
+        phone: assigned?.phone ?? NURSES[0].phone,
+      },
+      backup_nurse: {
+        name: backup?.name ?? NURSES[1].name,
+        phone: backup?.phone ?? NURSES[1].phone,
+      },
+      charge_nurse: { phone: CHARGE_NURSE_PHONE },
+      doctor: { phone: DOCTOR_PHONE },
       risk_score: p.riskScore,
+      condition: p.diagnosis,
       priority: "Critical",
+      bed: `${p.ward} · Room ${p.room}`,
+      // legacy flat fields for backwards compatibility
+      patient: p.name,
       nurse1: assigned?.phone ?? NURSES[0].phone,
       nurse2: backup?.phone ?? NURSES[1].phone,
-      charge_nurse: CHARGE_NURSE_PHONE,
-      doctor: DOCTOR_PHONE,
     };
     setSending(true);
     console.log("Sending webhook...", body);
