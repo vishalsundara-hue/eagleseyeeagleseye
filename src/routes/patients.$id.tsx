@@ -36,6 +36,41 @@ function PatientDetails() {
   const patients = usePatients();
   const navigate = useNavigate();
   const p = patients.find(x => x.id === id);
+  const [sending, setSending] = useState(false);
+
+  async function sendCriticalAlert() {
+    if (!p) return;
+    const assigned = NURSES.find(n => n.name === p.assignedNurse);
+    const backup = NURSES.find(n => n.ward === p.ward && n.name !== assigned?.name)
+      ?? NURSES.find(n => n.name !== assigned?.name);
+    const body = {
+      patient: p.name,
+      bed: `${p.ward} · Room ${p.room}`,
+      condition: p.diagnosis,
+      risk_score: p.riskScore,
+      priority: "Critical",
+      nurse1: assigned?.phone ?? NURSES[0].phone,
+      nurse2: backup?.phone ?? NURSES[1].phone,
+      charge_nurse: CHARGE_NURSE_PHONE,
+      doctor: DOCTOR_PHONE,
+    };
+    setSending(true);
+    try {
+      const res = await fetch(CRITICAL_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      toast.success("Emergency alert sent successfully.");
+    } catch (err) {
+      console.error("Critical alert failed", err);
+      toast.error("Failed to send emergency alert.");
+    } finally {
+      setSending(false);
+    }
+  }
+
 
   if (!p) {
     return (
