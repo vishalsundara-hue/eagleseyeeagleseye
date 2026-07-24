@@ -1,10 +1,16 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Activity, Droplet, Thermometer, Wind, Sparkles, UserPlus, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Activity, Droplet, Thermometer, Wind, Sparkles, UserPlus, AlertTriangle, Siren, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { RiskRing } from "@/components/RiskRing";
-import { usePatients, store } from "@/lib/store";
+import { usePatients, store, NURSES } from "@/lib/store";
 import { STATUS_COLORS } from "@/lib/mockData";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, AreaChart, Area } from "recharts";
+
+const CRITICAL_WEBHOOK_URL = "https://vishalvishal.app.n8n.cloud/webhook/critical-alert";
+const CHARGE_NURSE_PHONE = "919000000099";
+const DOCTOR_PHONE = "919000000100";
 
 export const Route = createFileRoute("/patients/$id")({
   head: () => ({ meta: [{ title: "Patient · EaglesEye AI" }] }),
@@ -30,6 +36,41 @@ function PatientDetails() {
   const patients = usePatients();
   const navigate = useNavigate();
   const p = patients.find(x => x.id === id);
+  const [sending, setSending] = useState(false);
+
+  async function sendCriticalAlert() {
+    if (!p) return;
+    const assigned = NURSES.find(n => n.name === p.assignedNurse);
+    const backup = NURSES.find(n => n.ward === p.ward && n.name !== assigned?.name)
+      ?? NURSES.find(n => n.name !== assigned?.name);
+    const body = {
+      patient: p.name,
+      bed: `${p.ward} · Room ${p.room}`,
+      condition: p.diagnosis,
+      risk_score: p.riskScore,
+      priority: "Critical",
+      nurse1: assigned?.phone ?? NURSES[0].phone,
+      nurse2: backup?.phone ?? NURSES[1].phone,
+      charge_nurse: CHARGE_NURSE_PHONE,
+      doctor: DOCTOR_PHONE,
+    };
+    setSending(true);
+    try {
+      const res = await fetch(CRITICAL_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      toast.success("Emergency alert sent successfully.");
+    } catch (err) {
+      console.error("Critical alert failed", err);
+      toast.error("Failed to send emergency alert.");
+    } finally {
+      setSending(false);
+    }
+  }
+
 
   if (!p) {
     return (
@@ -64,12 +105,23 @@ function PatientDetails() {
               <span className={`px-2.5 py-1 rounded-full text-xs border ${STATUS_COLORS[p.status]}`}>{p.status}</span>
             </div>
           </div>
-          <button
-            onClick={() => store.assignNurse(p.id)}
-            className="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 text-slate-900 font-semibold text-sm hover:shadow-lg hover:shadow-cyan-500/30 transition"
-          >
-            <UserPlus className="size-4" /> Assign Nurse
-          </button>
+          <div className="shrink-0 flex flex-col sm:flex-row gap-2">
+            <button
+              onClick={sendCriticalAlert}
+              disabled={sending}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-500 text-white font-semibold text-sm hover:shadow-lg hover:shadow-rose-500/40 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {sending ? <Loader2 className="size-4 animate-spin" /> : <Siren className="size-4" />}
+              {sending ? "Sending…" : "Critical Alert"}
+            </button>
+            <button
+              onClick={() => store.assignNurse(p.id)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 text-slate-900 font-semibold text-sm hover:shadow-lg hover:shadow-cyan-500/30 transition"
+            >
+              <UserPlus className="size-4" /> Assign Nurse
+            </button>
+          </div>
+
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
