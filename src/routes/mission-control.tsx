@@ -51,7 +51,7 @@ function MissionControl() {
 
         <div className="grid lg:grid-cols-3 gap-4">
           {/* Top recommendations */}
-          <div className="glass rounded-2xl p-5 lg:col-span-2">
+          <div className="glass rounded-lg p-5 lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Top AI Recommendations</h3>
               <span className="text-xs text-muted-foreground">Re-ranked live</span>
@@ -89,7 +89,7 @@ function MissionControl() {
 
           {/* Workload */}
           <div className="flex flex-col gap-4">
-            <div className="glass rounded-2xl p-5">
+            <div className="glass rounded-lg p-5">
               <div className="flex items-center gap-2 mb-3"><Activity className="size-4 text-primary" /><h3 className="font-semibold">Hospital Workload</h3></div>
               <div className="text-4xl font-bold tabular-nums">{workload}%</div>
               <div className="text-xs text-muted-foreground">{assignedNurses} of {store.totalNurses} nurses engaged</div>
@@ -97,7 +97,7 @@ function MissionControl() {
                 <div className="h-full bg-primary transition-all" style={{ width: `${workload}%` }} />
               </div>
             </div>
-            <div className="glass rounded-2xl p-5">
+            <div className="glass rounded-lg p-5">
               <div className="flex items-center gap-2 mb-3"><AlertOctagon className="size-4 text-rose-700" /><h3 className="font-semibold">Active Alerts</h3></div>
               {alerts.length === 0 && <div className="text-sm text-muted-foreground">No active alerts — all clear.</div>}
               <div className="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1">
@@ -117,7 +117,7 @@ function MissionControl() {
         </div>
 
         {/* Ward status */}
-        <div className="glass rounded-2xl p-5">
+        <div className="glass rounded-lg p-5">
           <div className="flex items-center gap-2 mb-3"><Layers className="size-4 text-primary" /><h3 className="font-semibold">Ward Status</h3></div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {wards.map(([name, w]) => {

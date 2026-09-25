@@ -27,7 +27,7 @@ function Vital({ icon, label, value, unit, warn }: { icon: React.ReactNode; labe
 }
 
 const tooltipStyle = {
-  contentStyle: { background: "rgba(15,23,42,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 12 },
+  contentStyle: { background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 12 },
   labelStyle: { color: "#94a3b8" },
 };
 
@@ -88,7 +88,7 @@ function PatientDetails() {
   if (!p) {
     return (
       <AppShell>
-        <div className="glass rounded-2xl p-10 text-center">
+        <div className="glass rounded-lg p-10 text-center">
           <h2 className="text-xl font-semibold">Patient not found</h2>
           <Link to="/" className="inline-flex items-center gap-2 mt-4 text-primary"><ArrowLeft className="size-4" /> Back to dashboard</Link>
         </div>
@@ -146,7 +146,7 @@ function PatientDetails() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-4">
-          <div className="glass rounded-2xl p-5 lg:col-span-2">
+          <div className="glass rounded-lg p-5 lg:col-span-2">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="size-4 text-primary" />
               <h3 className="font-semibold">AI Analysis</h3>
@@ -171,7 +171,7 @@ function PatientDetails() {
             )}
           </div>
 
-          <div className="glass rounded-2xl p-5">
+          <div className="glass rounded-lg p-5">
             <div className="flex items-center gap-2 mb-3">
               <AlertTriangle className="size-4 text-amber-700" />
               <h3 className="font-semibold">Risk Forecast</h3>
@@ -194,8 +194,8 @@ function PatientDetails() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-4">
-          <ChartCard title="SpO₂ Trend (last 60 min)" color="oklch(0.75 0.17 220)" data={p.history} dataKey="spo2" domain={[80, 100]} unit="%" />
-          <ChartCard title="Heart Rate Trend" color="oklch(0.75 0.2 30)" data={p.history} dataKey="hr" domain={[40, 160]} unit="bpm" />
+          <ChartCard title="SpO₂ Trend (last 60 min)" color="oklch(0.52 0.13 230)" data={p.history} dataKey="spo2" domain={[80, 100]} unit="%" />
+          <ChartCard title="Heart Rate Trend" color="oklch(0.55 0.18 28)" data={p.history} dataKey="hr" domain={[40, 160]} unit="bpm" />
           <RiskTrendCard data={[...p.history, ...p.predictions.map(pr => ({ t: `+${pr.t}m`, risk: pr.risk, spo2: 0, hr: 0 }))]} now={p.history.length - 1} />
         </div>
       </div>
@@ -205,12 +205,12 @@ function PatientDetails() {
 
 function ChartCard({ title, color, data, dataKey, domain, unit }: any) {
   return (
-    <div className="glass rounded-2xl p-5">
+    <div className="glass rounded-lg p-5">
       <h3 className="font-semibold text-sm mb-2">{title}</h3>
       <div className="h-44">
         <ResponsiveContainer>
           <LineChart data={data} margin={{ top: 5, right: 8, left: -20, bottom: 0 }}>
-            <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+            <CartesianGrid stroke="#eef2f6" vertical={false} />
             <XAxis dataKey="t" tick={{ fill: "#64748b", fontSize: 10 }} />
             <YAxis domain={domain} tick={{ fill: "#64748b", fontSize: 10 }} />
             <Tooltip {...tooltipStyle} formatter={(v: any) => [`${v}${unit}`, title]} />
@@ -224,22 +224,22 @@ function ChartCard({ title, color, data, dataKey, domain, unit }: any) {
 
 function RiskTrendCard({ data }: { data: any[]; now: number }) {
   return (
-    <div className="glass rounded-2xl p-5">
+    <div className="glass rounded-lg p-5">
       <h3 className="font-semibold text-sm mb-2">Risk Trajectory (history → forecast)</h3>
       <div className="h-44">
         <ResponsiveContainer>
           <AreaChart data={data} margin={{ top: 5, right: 8, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="riskG" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="oklch(0.75 0.2 30)" stopOpacity={0.6} />
-                <stop offset="100%" stopColor="oklch(0.75 0.2 30)" stopOpacity={0} />
+                <stop offset="0%" stopColor="oklch(0.55 0.18 28)" stopOpacity={0.6} />
+                <stop offset="100%" stopColor="oklch(0.55 0.18 28)" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+            <CartesianGrid stroke="#eef2f6" vertical={false} />
             <XAxis dataKey="t" tick={{ fill: "#64748b", fontSize: 10 }} />
             <YAxis domain={[0, 100]} tick={{ fill: "#64748b", fontSize: 10 }} />
             <Tooltip {...tooltipStyle} formatter={(v: any) => [`${v}%`, "Risk"]} />
-            <Area type="monotone" dataKey="risk" stroke="oklch(0.75 0.2 30)" strokeWidth={2.5} fill="url(#riskG)" isAnimationActive={false} />
+            <Area type="monotone" dataKey="risk" stroke="oklch(0.55 0.18 28)" strokeWidth={2.5} fill="url(#riskG)" isAnimationActive={false} />
           </AreaChart>
         </ResponsiveContainer>
       </div>

@@ -12,14 +12,14 @@ export const Route = createFileRoute("/analytics")({
 });
 
 const COLORS: Record<string, string> = {
-  Critical: "oklch(0.7 0.22 25)",
-  "High Risk": "oklch(0.8 0.18 75)",
-  Monitor: "oklch(0.75 0.15 230)",
-  Stable: "oklch(0.75 0.17 150)",
+  Critical: "oklch(0.52 0.19 25)",
+  "High Risk": "oklch(0.7 0.16 70)",
+  Monitor: "oklch(0.55 0.13 235)",
+  Stable: "oklch(0.58 0.14 150)",
 };
 
 const tooltipStyle = {
-  contentStyle: { background: "rgba(15,23,42,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 12 },
+  contentStyle: { background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 12 },
   labelStyle: { color: "#94a3b8" },
 };
 
@@ -74,7 +74,7 @@ function Analytics() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-4">
-          <div className="glass rounded-2xl p-5">
+          <div className="glass rounded-lg p-5">
             <h3 className="font-semibold text-sm mb-3">Risk Distribution</h3>
             <div className="h-64">
               <ResponsiveContainer>
@@ -89,12 +89,12 @@ function Analytics() {
             </div>
           </div>
 
-          <div className="glass rounded-2xl p-5 lg:col-span-2">
+          <div className="glass rounded-lg p-5 lg:col-span-2">
             <h3 className="font-semibold text-sm mb-3">Ward Performance — Average Risk Score</h3>
             <div className="h-64">
               <ResponsiveContainer>
                 <BarChart data={wards} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+                  <CartesianGrid stroke="#eef2f6" vertical={false} />
                   <XAxis dataKey="ward" tick={{ fill: "#94a3b8", fontSize: 10 }} />
                   <YAxis domain={[0, 100]} tick={{ fill: "#94a3b8", fontSize: 10 }} />
                   <Tooltip {...tooltipStyle} />
@@ -109,22 +109,22 @@ function Analytics() {
           </div>
         </div>
 
-        <div className="glass rounded-2xl p-5">
+        <div className="glass rounded-lg p-5">
           <h3 className="font-semibold text-sm mb-3">Alert Volume — Last 12 Hours</h3>
           <div className="h-56">
             <ResponsiveContainer>
               <BarChart data={alertsByHour} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <CartesianGrid stroke="#eef2f6" vertical={false} />
                 <XAxis dataKey="h" tick={{ fill: "#94a3b8", fontSize: 10 }} />
                 <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} />
                 <Tooltip {...tooltipStyle} />
-                <Bar dataKey="alerts" fill="oklch(0.75 0.17 220)" radius={[6,6,0,0]} />
+                <Bar dataKey="alerts" fill="oklch(0.52 0.13 230)" radius={[6,6,0,0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="glass rounded-2xl p-5">
+        <div className="glass rounded-lg p-5">
           <h3 className="font-semibold text-sm mb-3">Ward Detail</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[520px]">

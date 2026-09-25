@@ -47,7 +47,7 @@ function Dashboard() {
           <StatCard label="Active Alerts" value={alerts} icon={<AlertTriangle className="size-5" />} accent="amber" sub="open right now" />
         </div>
 
-        <div className="glass rounded-2xl p-4 sm:p-5">
+        <div className="glass rounded-lg p-4 sm:p-5">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] sm:flex sm:items-center gap-3 mb-4">
             <div className="relative min-w-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />

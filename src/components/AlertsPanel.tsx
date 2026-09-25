@@ -48,7 +48,7 @@ export function AlertsPanel() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[min(380px,90vw)] max-h-[70vh] overflow-hidden rounded-2xl glass-strong border border-border shadow-2xl z-50 flex flex-col">
+        <div className="absolute right-0 mt-2 w-[min(380px,90vw)] max-h-[70vh] overflow-hidden rounded-lg glass-strong border border-border shadow-2xl z-50 flex flex-col">
           <div className="px-4 py-3 border-b border-border flex items-center gap-2">
             <MessageCircle className="size-4 text-emerald-700" />
             <div className="font-semibold text-sm">WhatsApp Dispatch Log</div>

@@ -13,7 +13,7 @@ export function StatCard({
     emerald: "from-emerald-500/30 to-emerald-300/10 text-emerald-700 border-emerald-400/30",
   };
   return (
-    <div className="glass rounded-2xl p-4 sm:p-5 flex items-center gap-4">
+    <div className="glass rounded-lg p-4 sm:p-5 flex items-center gap-4">
       <div className={`size-12 rounded-xl grid place-items-center bg-gradient-to-br ${accents[accent]} border`}>
         {icon}
       </div>
