@@ -59,10 +59,10 @@ function Analytics() {
     <AppShell>
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-3">
-          <div className="size-10 rounded-xl grid place-items-center bg-gradient-to-br from-sky-400 to-cyan-300 text-slate-900"><BarChart3 className="size-5" /></div>
+          <div className="size-10 rounded-xl grid place-items-center bg-primary text-primary-foreground"><BarChart3 className="size-5" /></div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Analytics</h1>
-            <p className="text-sm text-slate-400">Hospital-wide risk &amp; response insights</p>
+            <p className="text-sm text-muted-foreground">Hospital-wide risk &amp; response insights</p>
           </div>
         </div>
 
@@ -129,7 +129,7 @@ function Analytics() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[520px]">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-wider text-slate-400 border-b border-white/10">
+                <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground border-b border-border">
                   <th className="py-2 px-3">Ward</th>
                   <th className="py-2 px-3">Patients</th>
                   <th className="py-2 px-3">Critical</th>
@@ -139,13 +139,13 @@ function Analytics() {
               </thead>
               <tbody>
                 {wards.map(w => (
-                  <tr key={w.ward} className="border-b border-white/5">
+                  <tr key={w.ward} className="border-b border-border">
                     <td className="py-2 px-3 font-medium">{w.ward}</td>
                     <td className="py-2 px-3 tabular-nums">{w.count}</td>
-                    <td className="py-2 px-3 tabular-nums text-rose-300">{w.critical}</td>
+                    <td className="py-2 px-3 tabular-nums text-rose-700">{w.critical}</td>
                     <td className="py-2 px-3 tabular-nums">{w.avgRisk}%</td>
                     <td className="py-2 px-3">
-                      <div className="h-1.5 w-32 rounded-full bg-white/10 overflow-hidden">
+                      <div className="h-1.5 w-32 rounded-full bg-muted overflow-hidden">
                         <div className="h-full" style={{ width: `${w.avgRisk}%`, background: w.avgRisk >= 70 ? COLORS.Critical : w.avgRisk >= 50 ? COLORS["High Risk"] : COLORS.Monitor }} />
                       </div>
                     </td>
