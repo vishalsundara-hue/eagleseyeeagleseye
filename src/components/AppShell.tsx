@@ -6,8 +6,8 @@ import { AlertsPanel } from "./AlertsPanel";
 
 
 const nav = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/mission-control", label: "Mission Control", icon: Radar },
+  { to: "/", label: "Patients", icon: LayoutDashboard },
+  { to: "/mission-control", label: "Command Center", icon: Radar },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col glass-strong border-r border-border p-5 gap-2 sticky top-0 h-screen">
+      <aside className="hidden lg:flex w-56 shrink-0 flex-col glass-strong border-r border-border p-4 gap-2 sticky top-0 h-screen">
         <div className="flex items-center gap-3 mb-6">
           <div className="size-10 rounded-xl grid place-items-center bg-primary text-primary-foreground ">
             <Stethoscope className="size-5" />
@@ -41,9 +41,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={n.to}
                 to={n.to}
                 className={[
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition",
+                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition",
                   active
-                    ? "bg-gradient-to-r from-sky-500/20 to-cyan-400/10 text-foreground border border-cyan-400/30"
+                    ? "bg-accent text-accent-foreground font-medium border-l-2 border-primary rounded-l-none"
                     : "text-foreground/80 hover:bg-muted hover:text-foreground",
                 ].join(" ")}
               >
@@ -76,14 +76,19 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
             <Activity className="size-4 text-primary" />
-            <span>Hospital Attention &amp; Response Intelligence</span>
+            <span className="font-medium text-foreground">ICU — A</span>
+            <span>· St. Aurora General</span>
           </div>
           <div className="ml-auto flex items-center gap-3 text-xs">
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full glass">
-              <span className="live-dot" /> <span className="text-emerald-700">LIVE</span>
+            <input aria-label="Search" placeholder="Search patients, alerts..." className="hidden md:block w-64 h-8 px-3 rounded-md border border-input bg-muted text-xs outline-none focus:border-primary" />
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border">
+              <span className="live-dot" /> <span className="text-emerald-700 font-semibold tracking-wide">LIVE</span>
             </span>
             <AlertsPanel />
-            <span className="hidden sm:inline text-muted-foreground">St. Aurora General Hospital</span>
+            <span className="hidden md:flex items-center gap-2 pl-3 border-l border-border">
+              <span className="size-7 rounded-full bg-accent text-accent-foreground grid place-items-center text-[11px] font-semibold">DK</span>
+              <span className="text-foreground font-medium">Dr. Kumar</span>
+            </span>
           </div>
         </header>
 
@@ -95,7 +100,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             return (
               <Link key={n.to} to={n.to} className={[
                 "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap",
-                active ? "bg-cyan-400/15 text-foreground border border-cyan-400/30" : "text-foreground/80 bg-muted",
+                active ? "bg-accent text-accent-foreground border border-primary/30" : "text-foreground/80 bg-muted",
               ].join(" ")}>
                 <Icon className="size-3.5" /> {n.label}
               </Link>
